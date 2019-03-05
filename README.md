@@ -21,3 +21,26 @@ Give a try, compile the .NET solution, and see what you can do between .NET and 
 HTH,
 
 Gérôme GUILLEMIN
+
+## How to use Apicall class
+
+See the example [LICENSE.md](LICENSE.md) file for details
+
+## Built With
+
+* [VS2017](https://visualstudio.microsoft.com/vs/) - Build smarter apps, fast using Visual Studio 2017
+* [GCC51](https://gcc.gnu.org/) - GCC, the GNU Compiler Collection version 5.1.0 (tdm-1)
+
+## Authors
+
+* **Gérôme GUILLEMIN**
+
+## License
+
+This project is licensed under the LGPL v3 License - see the [LICENSE.md](LICENSE.md) file for details
+
+## Acknowledgments
+
+* Hat tip to anyone whose code was used
+* Inspiration
+* etc

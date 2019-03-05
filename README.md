@@ -24,7 +24,7 @@ Gérôme GUILLEMIN
 
 ## How to use Apicall class
 
-See the example [LICENSE.md](LICENSE.md) file for details
+See the following C# example [Program.cs](Apicall.NET/Test/Program.cs) file for details 
 
 ## Built With
 

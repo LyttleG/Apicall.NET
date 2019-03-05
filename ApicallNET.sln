@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.421
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApicallNET", "ApicallNET\ApicallNET.csproj", "{B8B2141E-0B82-4A0F-91DB-615A86174765}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{3A321EB9-7AA9-429E-9025-B20E4DFC4C25}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B8B2141E-0B82-4A0F-91DB-615A86174765}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8B2141E-0B82-4A0F-91DB-615A86174765}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8B2141E-0B82-4A0F-91DB-615A86174765}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8B2141E-0B82-4A0F-91DB-615A86174765}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A321EB9-7AA9-429E-9025-B20E4DFC4C25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A321EB9-7AA9-429E-9025-B20E4DFC4C25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A321EB9-7AA9-429E-9025-B20E4DFC4C25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A321EB9-7AA9-429E-9025-B20E4DFC4C25}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DA0A63F5-071A-49BD-BBF0-8AA3CDE7FED3}
+	EndGlobalSection
+EndGlobal

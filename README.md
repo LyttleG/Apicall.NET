@@ -23,8 +23,9 @@ HTH,
 Gérôme GUILLEMIN
 
 ## How to use Apicall class
-
-See the following C# example [Program.cs](Apicall.NET/Test/Program.cs) file for details 
+```
+See the C# source code located in Test/Program.cs for details 
+```
 
 ## Built With
 

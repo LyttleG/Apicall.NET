@@ -36,7 +36,7 @@ Please have a look at the [test source code here](/Test/Program.cs)
 * [VS2017](https://visualstudio.microsoft.com/vs/) - Build smarter apps, fast using Visual Studio 2017
 * [GCC51](https://gcc.gnu.org/) - GCC, the GNU Compiler Collection version 5.1.0 (tdm-1)
 
-## Authors
+## Author
 * **Gérôme GUILLEMIN**
 
 ## License

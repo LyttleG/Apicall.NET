@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -11,8 +12,8 @@ namespace ApicallNET
     * Description: Call API by name implementation in mixing C and C#.
     * Requires: Apicall.dll (C DLL with sdtcall/cdecl API calling support)
     * 
-    * Date:         Tuesday, February 26th 2019
-    * Updated:      Tuesday, March 5th 2019   
+    * Date:         Tue., February 26th 2019
+    * Updated:      Wed., March 6th 2019   
     * Developed by: Gérôme GUILLEMIN 
     * Mailto:       gerome_71@yahoo.fr 
     * 
@@ -22,7 +23,7 @@ namespace ApicallNET
     public class Apicall : IDisposable
     {
         #region DECLARATIONS
-        [DllImport("Apicall.dll", SetLastError = true, /*CharSet = CharSet.Auto,*/ CallingConvention = CallingConvention.StdCall)]
+        [DllImport("Apicall.dll", SetLastError = true, CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr ApiCall(string DllName, string FuncName, int nbParam, int[] ParamArray);
         private static readonly int MAX_GUID_LENGTH = 0x25;
         private static ArrayDatas ad = null;
@@ -46,6 +47,10 @@ namespace ApicallNET
         public int AddressOf(int value) => PinObject(value, true);
         public int AddressOf(byte[] value) => PinObject(value, true);
         public void Trace(string strMessage) => Console.WriteLine(strMessage);
+        public int GetErrorCode => ad.LastError;
+        public string GetErrorMessage(int code) => new Win32Exception(code).Message;
+        public string GetErrorMessage() => new Win32Exception(ad.LastError).Message;
+        public bool Error => ad.LastError != 0;
 
         /// <summary>
         /// Call any API C function (STDCALL and/or CDECL)
@@ -58,16 +63,21 @@ namespace ApicallNET
         {
             try
             {
+                DoCleanup();
+
                 if (ad.UnicodeFlag.HasValue)
                     ad = DoConvert(FuncParameters, ad.UnicodeFlag.Value); // Ansi(false) or Unicode(true) use of allocated strings
                 else
                     ad = DoConvert(FuncParameters, FuncName.EndsWith("W") ? true : false); // Automatic pistol :)
 
                 ad.PtrApiCall = ApiCall(DllName, FuncName, ad.Datas.Length, ad.Datas);
+                ad.LastError = Marshal.GetLastWin32Error();
+
+                ad.CleanupFlag = true;
 
                 return ad.PtrApiCall.ToInt32();
             }
-            catch (Exception ex) { ad.Ex = ex; }
+            catch (Exception ex) { ad.Exception = ex; }
 
             return 0;
         }
@@ -75,23 +85,23 @@ namespace ApicallNET
         /// <summary>
         /// Retrieve the value of an Apicall parameter (after call only)
         /// </summary>
-        /// <param name="number">Indice of the parameter to retrieve</param>
+        /// <param name="index">Indice of the parameter to retrieve</param>
         /// <returns>Value of the parameter or null if it failed</returns>
-        public object ParamValue(int number)
+        public object ParamValue(int index, int maxlength = 0)
         {
             int found = -1;
             int value = -1;
 
             foreach (KeyValuePair<string, int> hash in ad.HashCodes)
             {
-                if (Convert.ToInt32(hash.Key.Substring(MAX_GUID_LENGTH)) == ad.Datas[number])
+                if (Convert.ToInt32(hash.Key.Substring(MAX_GUID_LENGTH)) == ad.Datas[index])
                 {
                     value = hash.Value;
                     break;
                 }
             }
 
-            if (value != -1 && ad.Datas.Length > number)
+            if (value != -1 && ad.Datas.Length > index)
             {
                 int hashCode = value;
 
@@ -111,7 +121,14 @@ namespace ApicallNET
                     GCHandle ptrHandle = ad.GCHandles[found];
 
                     if (ptrHandle.IsAllocated)
-                        return PtrToStr(ptrHandle);
+                    {
+                        string buffer = PtrToStr(ptrHandle);
+                        if (maxlength <= 0 || buffer.Length <= maxlength)
+                            return buffer;
+                        else
+                            return buffer.Substring(0, maxlength);
+                    }
+
                     else
                         return hashCode;
                 }
@@ -119,6 +136,16 @@ namespace ApicallNET
 
             return value;
         }
+
+        /// <summary>
+        /// Get last Exception that occurred
+        /// </summary>
+        /// <returns>Exception or null if no exception has occurred</returns>
+        public Exception GetLastException()
+        {
+            return ad.Exception;
+        }
+
         #endregion PUBLIC METHODS
 
         #region PRIVATE METHODS
@@ -139,7 +166,7 @@ namespace ApicallNET
                     HashCodeSet(retValue, buffer.GetHashCode());
                 }
             }
-            catch (Exception ex) { ad.Ex = ex; }
+            catch (Exception ex) { ad.Exception = ex; }
 
             return retValue;
         }
@@ -212,7 +239,6 @@ namespace ApicallNET
             int i = 0, ptrValue = 0;
 
             ad.Datas = new int[arrList.Count];
-            ad.Types = new int[arrList.Count];
             ad.UnicodeFlag = Unicode;
 
             foreach (var el in arrList)
@@ -222,7 +248,6 @@ namespace ApicallNET
                     ptrValue = StrPtr(el);
 
                 ad.Datas[i] = ptrValue == -1 ? 0 : ptrValue;
-                ad.Types[i] = el.GetType().Name.Equals("String") ? 1 : 0;
                 i++;
             }
 
@@ -236,14 +261,34 @@ namespace ApicallNET
         {
             public ArrayDatas(bool Unicode) { this.UnicodeFlag = Unicode; }
             public ArrayDatas() { }
-            public int[] Types { get; set; } = new int[0];
             public int[] Datas { get; set; } = new int[0];
             public Dictionary<string, int> HashCodes { get; set; } = new Dictionary<string, int>();
             public List<GCHandle> GCHandles { get; set; } = new List<GCHandle>();
+            public IntPtr PtrApiCall { get; set; } = IntPtr.Zero;
+            public Exception Exception { get; set; }
             public bool? UnicodeFlag { get; set; } = null;
-            public IntPtr PtrApiCall { get; set; }
-            public Exception Ex { get; set; }
+            public bool CleanupFlag { get; set; } = false;
+            public int LastError { get; set; }
         }
+
+        private void DoCleanup()
+        {
+            if (ad.CleanupFlag)
+            {
+                foreach (var handle in ad.GCHandles)
+                {
+                    if (handle.IsAllocated)
+                        handle.Free();
+                }
+                ad.GCHandles.Clear();
+                ad.HashCodes.Clear();
+                ad.Datas = new int[0];
+                ad.PtrApiCall = IntPtr.Zero;
+                ad.CleanupFlag = false;
+                ad.LastError = 0;
+            }
+        }
+
         #endregion INTERNAL CLASS
 
         #region IDisposable Support
@@ -256,17 +301,7 @@ namespace ApicallNET
                 // Supprimer l'état managé (objets managés)
                 if (disposing)
                 {
-                    if (ad.GCHandles != null)
-                    {
-                        foreach (var handle in ad.GCHandles)
-                        {
-                            if (handle.IsAllocated)
-                                handle.Free();
-                        }
-                    }
-
-                    ad.GCHandles.Clear();
-                    ad.HashCodes.Clear();
+                    DoCleanup();
                     disposedValue = true;
                 }
             }

@@ -1,22 +1,23 @@
 # Apicall.NET
-Calling API functions using .NET
+Calling Win32 API functions using .NET 4.x
 
-You will find 1 solution developped in Visual Studio 2017
+The Apicall.NET solution was developped using Visual Studio 2017.
+The purpose of this library is to allow any .NET developper to call any Win32 API without declaring any prototype function.
 
 This solution contains 2 projects :
 
-1 - ApicallNET: this is the core proxy DLL written in C# using generics.
-    This DLL has a dependency with the C Apicall.dll, see below (*)
+1 - ApicallNET.dll: this is the core proxy library written in C# using generics.
+    This DLL has a dependency with Apicall.dll, see below (*)
     
 2- Test: this is a test project given with some examples
 
 Compatibility is set to .NET 4.0, but you can compile it for version 3.0 as well it should work
 
 (*) Each projects folders contains a directory named DLL that holds a file named Apicall.dll
-Apicall.dll is the low level generic interface that allow you to invoke C standard libraries, STDCALL as well as in CDECL format
-Apicall.dll was compiled using GCC version 5.1.0 (tdm-1)
+Apicall.dll is a low level generic interface that allows you to invoke C standard libraries (STDCALL as well as in CDECL)
+Apicall.dll was developped in pure C with a pinch os ASM code, then compiled using GCC version 5.1.0 (tdm-1)
 
-Give a try, compile the .NET solution, and see what you can do between .NET and WIN32 DLL functions
+Give a try, compile the .NET solution, and see what you can do with Win32 API from within .NET!
 
 HTH,
 

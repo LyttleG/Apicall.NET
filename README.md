@@ -21,18 +21,16 @@ Give a try, compile the .NET solution, and see what you can do with Win32 API fr
 
 ## How to use Apicall class
 ```
-The following C# code will invoqke 'MessageBoxW' unicode function from 'User32.dll' (W == Unicode)
+The following C# code invokes 'MessageBoxW' unicode function from 'User32.dll'...
 ```
-![alt text](/Test/Example.jpg?raw=true "Invoke MessageBoxW")
+![alt text](/Test/Example.jpg?raw=true "Invoke MessageBoxW C# code")
 
 ```
-Here's the result:
+Here's the result!
 ```
-![alt text](/Test/Output.png?raw=true "Invoke MessageBoxW")
+![alt text](/Test/Output.png?raw=true "Console output")
 
-```
-See the C# source code located in Test/Program.cs for details 
-```
+Please have a look at the [test source code here](/Test/Program.cs)
 
 ## Built With
 * [VS2017](https://visualstudio.microsoft.com/vs/) - Build smarter apps, fast using Visual Studio 2017

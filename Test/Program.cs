@@ -1,4 +1,4 @@
-﻿using ApicallNET;
+using ApicallNET;
 using System;
 
 namespace Test
@@ -7,47 +7,42 @@ namespace Test
     {
         static void Main(string[] args)
         {
-            int iRet = 0;
-            const int MAX_COMPUTER_NAME = 15;
-            const int MAX_PATH = 255;
+            const int MAX_PATH = 255; const int MAX_COMPUTER_NAME = 15; int ret = 0;
 
-            for (int i = 0; i < 1; i++)
+            for (int i = 1; i <= 1; i++)
             {
-                Console.WriteLine($"---------------------------------------------------------------------------------- {i}");
+                Console.WriteLine($"----------------------------------- {i:00000000} -------------------------------------");
 
-                using (var p = new Apicall(Unicode: true))
+                using (var p = new Apicall()) // => Detects if Unicode or if Default encoding will be set
                 {
-                    iRet = p.Invoke("user32", "MessageBoxW", 0, "Gérôme a testé", "Titre en français", 3 | 64);
-                    if (iRet != 0)
-                        p.Trace($"Invoke::MessageBoxW has returned: '{iRet}'");
-                    for (int j = 0; j < p.ParamCount; j++)
-                    {
-                        p.Trace($"Invoke::MessageBoxW Parameter[{j}] == '{p.ParamValue(j).ToString()}'");
-                    }
+                    ret = p.Invoke("user32", "MessageBoxW", 0 /* replace '0' with '0xBAD' to get an error */, "Et voilà le résultat !", "Title", 3 | 64);
+                    if (p.Error)
+                        p.Trace($">> Invoke::MessageBoxW error message: '{p.GetErrorMessage()}' [code: {p.GetErrorCode}]  ");
+                    else
+                        p.Trace($">> Invoke::MessageBoxW returned: '{ret}'");
+
+                    for (int j = 0; j < p.ParamCount; j++) p.Trace($">> Parameter[{j}] == '{p.ParamValue(j)}'");
                     p.Trace("----------------------------------------------------------------------------------");
                 }
 
-                using (var p = new Apicall())
+                using (var p = new Apicall()) // => Detects if Unicode or if Default encoding will be set
                 {
-                    iRet = p.Invoke("kernel32", "SleepEx", 2000, 1);
-                    p.Trace($"Invoke::SleepEx Parameter[0] == '{p.ParamValue(0).ToString()}'");
+                    ret = p.Invoke("kernel32", "GetTempPathA", MAX_PATH, new String('\0', MAX_PATH + 1));
+                    p.Trace($">> Invoke::GetTempPathA == '{p.ParamValue(1, ret)}'");
+
+                    ret = p.Invoke("kernel32", "GetComputerNameA", new String('x', MAX_COMPUTER_NAME), p.AddressOf(MAX_COMPUTER_NAME + 1));
+                    p.Trace($">> Invoke::GetComputerNameA == '{p.ParamValue(0, ret == 1 ? MAX_COMPUTER_NAME : 0)}'");
                     p.Trace("----------------------------------------------------------------------------------");
                 }
 
-                using (var p = new Apicall())
+                using (var p = new Apicall(Unicode: true)) // => Unicode flag is set
                 {
-                    //string buffer = new String('\0', MAX_PATH + 1);
-                    iRet = p.Invoke("kernel32", "GetTempPathA", MAX_PATH, new String('\0', MAX_PATH + 1));
-                    if (iRet != 0)
-                        p.Trace($"Invoke::GetTempPathA == '{p.ParamValue(1).ToString().Substring(0, iRet)}'");
-                    p.Trace("----------------------------------------------------------------------------------");
-                }
+                    ret = p.Invoke("kernel32", "GetTempPathW", MAX_PATH, new String('\0', MAX_PATH + 1));
+                    p.Trace($">> Invoke::GetTempPathW == '{p.ParamValue(1, ret)}'");
 
-                using (var p = new Apicall())
-                {
-                    //string buffer = new String('x', MAX_COMPUTER_NAME);
-                    iRet = p.Invoke("kernel32", "GetComputerNameW", new String('x', MAX_COMPUTER_NAME), p.AddressOf(MAX_COMPUTER_NAME + 1));
-                    p.Trace($"Invoke::GetComputerNameW == '{p.ParamValue(0).ToString()}'");
+                    ret = p.Invoke("kernel32", "GetComputerNameW", new String('\0', MAX_COMPUTER_NAME), p.AddressOf(MAX_COMPUTER_NAME + 1));
+                    p.Trace($">> Invoke::GetComputerNameW == '{p.ParamValue(0, ret == 1 ? MAX_COMPUTER_NAME : 0)}'");
+                    p.Trace("----------------------------------------------------------------------------------");
                 }
             }
 
@@ -56,6 +51,3 @@ namespace Test
         }
     }
 }
-
-
-
